@@ -1,0 +1,160 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Bài tập mapbox</title>
+
+    <!-- import js, css cho mapbox -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css' rel='stylesheet' />
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.css' rel='stylesheet' />
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js'></script>
+
+    <style>
+        #buttons {
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        .button {
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            width: 20%;
+            padding: 8px;
+            border-radius: 3px;
+            margin-top: 10px;
+            font-size: 12px;
+            text-align: center;
+            color: #fff;
+            background: #ee8a65;
+            font-family: sans-serif;
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+<body>
+
+    <!--
+    Bài 1: Bạn hãy tải một bản đồ Mapbox lên website với vị trí hiện tại của mình.
+    Bài 2: Thêm các nút zoom (thu nhỏ/phóng to tỉ lệ bản đồ), xác định vị trí cá nhân,
+    nút FullScreen vào bản đồ.
+    Bài 3: Tiếp tục thêm chức năng chọn ngôn ngữ cho bản đồ.
+    Bài 4: Khi click chuột lên bản đồ thì một Marker được thêm vào vị trí click
+    Bài 5: Thêm chức năng chỉ đường giữa 2 vị trí trên bản đồ
+    -->
+
+    <div id='map' style='width: 1400px; height: 500px; margin:0px;'></div>
+
+    <ul id="buttons">
+        <li id="button-fr" class="button">French</li>
+        <li id="button-ru" class="button">Russian</li>
+        <li id="button-de" class="button">German</li>
+        <li id="button-es" class="button">Spanish</li>
+    </ul>
+
+    <script>
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYmFiaXB1bnNvY2l1IiwiYSI6ImNsZmh3MWZrYzAzYjkzb3BubDBtbGo1amIifQ.IoV0G77notb_DSuFkfZxuw';
+
+        // Bài 1
+
+        // Tạo bản đồ
+        var map = new mapboxgl.Map({
+            // id của thẻ html chứa bản đồ
+            container: 'map',
+            // kiểu bản đồ
+            style: 'mapbox://styles/mapbox/streets-v12',
+            // starting zoom
+            zoom: 12,
+        });
+        // Lấy vị trí hiện tại
+        navigator.geolocation.getCurrentPosition(function (vitri) {
+            // Lấy tọa độ
+            var currentLocation = [vitri.coords.longitude, vitri.coords.latitude];
+            // Thiết lập vị trí bắt đầu cho bản đồ
+            map.setCenter(currentLocation);
+        });
+
+        //=========================================================================================================================
+
+        // Bài 2
+
+        //      zoom
+        var nav_control = new mapboxgl.NavigationControl({
+            // Hiển thị nút la bàn (compass), default=true
+            showCompass: true,
+
+            // Hiển thị nút phóng to/thu nhỏ, default = true
+            showZoom: true,
+        });
+        map.addControl(nav_control);
+        //      geolocate
+        var geo_control = new mapboxgl.GeolocateControl({
+
+            positionOptions: { enableHighAccuracy: true },
+
+            fitBoundsOptions: { maxZoom: 15 },
+
+            // Ảnh và vị trí của ng dùng được cập nhật khi ng dùng di chuyển
+            trackUserLocation: true,
+
+            // Hiện dấu chấm tại vị trí người dùng, default = true
+            showAccuracyCircle: true,
+
+            // Hiện mũi tên chỉ chỉ hướng cạnh vị trí người dùng
+            showUserHeading: true,
+        });
+        map.addControl(geo_control);
+        //      fullscreen
+        var fullscreen_control = new mapboxgl.FullscreenControl({
+        });
+        map.addControl(fullscreen_control);
+
+        //=========================================================================================================================
+
+        // Bài 3: chọn ngôn ngữ
+        document.getElementById('buttons').addEventListener('click', (event) => {
+            const language = event.target.id.substr('button-'.length);
+            // Use setLayoutProperty to set the value of a layout property in a style layer.
+            // The three arguments are the id of the layer, the name of the layout property,
+            // and the new property value.
+            map.setLayoutProperty('country-label', 'text-field', [
+                'get',
+                `name_${language}`
+            ]);
+        });
+
+        //=========================================================================================================================
+
+        // Bài 4:
+        map.on('click', function (e) {
+
+            // Tạo marker mới tại tọa độ vị trí đã click
+            var marker = new mapboxgl.Marker()
+                .setLngLat(e.lngLat)
+                .addTo(map);
+
+            // Tạo popup mới chứa tọa độ vị trí đã click
+            var popup = new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('Latitude: ' + e.lngLat.lat + '<br>Longitude: ' + e.lngLat.lng)
+                .addTo(map);
+        });
+
+        //=========================================================================================================================
+
+        // Bài 5:
+        var directions = new MapboxDirections({
+            accessToken: mapboxgl.accessToken
+        });
+        map.addControl(directions, 'top-left');
+
+    </script>
+
+</body>
+</html>s

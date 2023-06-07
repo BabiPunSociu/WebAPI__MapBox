@@ -1,0 +1,263 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Bài tập mapbox</title>
+
+    <!-- import js, css cho mapbox -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css' rel='stylesheet' />
+
+</head>
+<body>
+
+    <div id='map' style='width: 700px; height: 700px; margin:0px;'></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYmFiaXB1bnNvY2l1IiwiYSI6ImNsZmh3MWZrYzAzYjkzb3BubDBtbGo1amIifQ.IoV0G77notb_DSuFkfZxuw';
+
+        // mapboxgl.Map(option) : để tải bản đồ
+        const map = new mapboxgl.Map({
+
+            // id của thẻ html chứa bản đồ
+            container: 'map',
+
+            // kiểu bản đồ
+            style: 'mapbox://styles/mapbox/streets-v12',
+
+            // vị trí bắt đầu [kinh độ (lng), vĩ độ (lat)]
+            center: [105.809508, 21.010619],
+
+            // starting zoom
+            zoom: 12,
+
+        });
+        // -------------------------------------------------------------
+
+        // Marker: điểm đánh dấu
+
+        // Tạo bằng: new mapboxgl.Marker(option)
+        var marker1 = new mapboxgl.Marker({
+            // color
+            color: "#00FF7F",
+
+            // scale: tỷ lệ marker (int), càng lớn -> marker càng to
+            scale: 1,
+
+            // cho phép kéo mark sang vị trí khác: true/false
+            draggable: true,
+
+            // vị trí nhãn so với marker: top / right / bottom / left / top-right / top-left / bottom-right / bottom-left
+            anchor: "top-left",
+
+            // rotation: góc xoay của marker, (int)>0 -> xoay theo chiều kim đồng hồ
+            rotation: 0,
+
+        })
+            .setLngLat([105.809508, 21.010619]) // thiết lập vị trí hiển thị
+            .addTo(map) // Gán marker lên bản đồ
+
+        /* Một số phương thức đối với marker
+
+        Cú pháp: <tên marker>.<tên phương thức>([ds tham số])
+
+        addTo(map): chèn marker lên bản đồ
+
+        getElement(): get phần tử html chứa marker
+        getLngLat(): get vị trí địa lý của marker, trả về kiểu Lnglat{lng:x;lat;y}
+        getPopup(): trả về Popup được liên kết với marker
+        getRotation: get góc xoay hiện tại của marker
+        isDraggable(): return true/false
+
+        setDraggable(bool a): set cho phép kéo di chuyển
+        setLngLat([lng, lat]): set vị trí địa lý
+        togglePopup(): mở/đóng popup
+        setRotation: set góc xoay
+
+        remove(): xóa marker khỏi bản đồ
+
+        */
+
+        // -------------------------------------------------------------
+
+        // Popup
+
+        var popup = new mapboxgl.Popup({
+
+            // nút close xuất hiện phía trên bên phải cửa sổ popup: default = true
+            closeButton: true,
+
+            // cửa sổ sẽ được đóng lại khi click vào bản đồ: default = true
+            closeOnClick: false,
+
+            // cửa sổ Popup được đóng lại khi bản đồ di chuyển, default = false
+            closeOnMove: false,
+
+            // cửa sổ Popup nhận focus lên phần tử đầu tiên trong Popup, default = true
+            focusAfterOpen: true,
+
+            // Thiết lập vị trí của LngLat so với Popup
+            anchor: "right",
+
+            // Độ lệch <number (px)> so với vị trí Popup
+            offset: 0,
+
+            // Tên lớp chứa CSS để thiết lập Popup
+            className: '',
+
+            // Thiết lập độ rộng tối đa của Popup, default = "240px"
+            maxWidth: "240px"
+
+        })
+            .setLngLat([105.809508, 21.010619])
+            .setHTML("<h1>hello Dũng</h1>")
+            .addTo(map)
+
+
+        // Các phương thức
+
+        /*
+        addTo(map): Chèn Popup vào map được chỉ định
+        addClassName(className): Thêm tên class CSS
+        setDomContent(htmlNode): thiết lập nội dung bằng phần tử DOM
+        setLngLat([lng, lat])
+        setHTML(html): thiết lập nội dung bằng thẻ html
+        setText(text): thiết lập nội dung bằng chuỗi text
+        setMaxWidth(maxWidth)
+
+        toggleClassName(className): thêm hoặc xóa một class CSS
+            return true-thêm / false-xóa
+
+        getElement()
+        getLngLat(): trả về vị trí địa lý thuộc tính anchor
+        getMaxWidth()
+        isOpen: return true-mở / false-đóng
+
+
+        remove(): xóa popup khỏi bản đồ
+        removeClassName(): xóa class CSS
+
+        */
+
+        // -------------------------------------------------------------
+
+        //      CONTROLS
+
+        /*
+            MAPBOX cung cấp các Control mặc định:
+
+        - NavigationControl: nút phóng to/thu nhỏ và la bàn
+        - GeolocateControl: Nút định vị
+        - AttributionControl: lấy các thông tin bản đồ
+        - ScaleControl: hiển thị tỷ lệ bản đồ
+        - FullscreenControl: nút bật/tắt chế độ toàn màn hình
+
+        Để chèn control vào bản đồ: map.addControl(name control [, vị trí])
+        */
+
+        //    NAVIGATION CONTROL
+        var nav_control = new mapboxgl.NavigationControl({
+            // Hiển thị nút la bàn (compass), default=true
+            showCompass: true,
+
+            // Hiển thị nút phóng to/thu nhỏ, default = true
+            showZoom: true,
+        });
+
+        map.addControl(nav_control);
+        // ------------------------------
+        //      GEOLOCATE CONTROL
+        /*
+        - CHỈ thực hiện được khi người dùng bật tính năng lấy vị trí của trình duyệt
+        - GeolocateControl có 2 chế độ:
+            ~ trackUserLocation == false (mặc định): nút vị trí không thay đổi khi người di chuyển
+            ~ Ngược lại, GeolocateControl có 3 trạng thái:
+                @ active: ảnh của bản đồ và vị trí người dùng thay đổi khi người di chuyển
+                @ passive: vị trị ng dùng thay đổi, nhưng ảnh không được cập nhật khi ng dùng di chuyển
+                @ disable: xảy ra khi vị trí không khả dụng hoặc bị vô hiệu hóa chức năng định vị
+        */
+        var geo_control = new mapboxgl.GeolocateControl({
+
+            // Các tùy chọn vị trí người dùng
+            // tham số kiểu Object
+            // default = {enableHighAccuracy:false,timeout: 6000}
+            positionOptions: { enableHighAccuracy: true },
+
+            // Các tùy chọn xoay hoặc tỉ lệ thu phóng của bản đồ khi xác định vị trí hiện tại của người dùng.
+            // tham số kiểu Object
+            // default = {maxZoom:15}
+            fitBoundsOptions: { maxZoom: 15 },
+
+            // Ảnh và vị trí của ng dùng được cập nhật khi ng dùng di chuyển
+            trackUserLocation: true,
+
+            // Hiện dấu chấm tại vị trí người dùng, default = true
+            showAccuracyCircle: true,
+        });
+
+        map.addControl(geo_control);
+        // ------------------------------
+
+        //      SCALE CONTROL <tỷ lệ>
+        var scale_control = new mapboxgl.ScaleControl({
+
+            maxWidth: 80,  // kiểu number (px), default=100
+
+            // Đơn vị đo khoảng cách: "metric" (mét), "nautical" (hải lý), default= "imperial"
+            unit: "metric",
+        });
+        map.addControl(scale_control);
+        // ------------------------------
+
+        //      FULLSCREEN CONTROL
+
+        var fullscreen_control = new mapboxgl.FullscreenControl({
+
+            // Chỉ định thẻ html để hiển thị toàn thẻ đó
+            // Nếu không được chỉ định -> hiển thị toàn màn hình máy tính
+            container: "body"
+        });
+        map.addControl(fullscreen_control);
+
+
+        // -------------------------------------------------------------
+
+        //         XỬ LÍ SỰ KIỆN
+
+        /* Bắt sự kiện
+           - off(type, listener): xóa 1 hàm xử lý sự kiện đã đăng kí
+           - on(type, listener): đăng kí hàm cho 1 sự kiện
+           - once(type, listener): đăng kí hàm xử lý sự kiện, nhưng hàm này chỉ được gọi 1 lần
+        */
+
+        /* Viết sự kiện click vào map, hiển thị marker màu đỏ và popup có nội dung là tọa độ tại vị trí click */
+
+        // Khởi tạo biến lưu trữ marker và popup hiện tại
+        var currentMarker = null;
+        var currentPopup = null;
+
+        map.on('click', function (e) {
+            // Nếu đã có marker và popup hiện tại thì xóa chúng đi
+            if (currentMarker !== null) {
+                currentMarker.remove();
+                currentPopup.remove();
+            }
+
+            // Tạo marker mới tại tọa độ vị trí đã click
+            var marker = new mapboxgl.Marker()
+                .setLngLat(e.lngLat)
+                .addTo(map);
+
+            // Tạo popup mới chứa tọa độ vị trí đã click
+            var popup = new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('Latitude: ' + e.lngLat.lat + '<br>Longitude: ' + e.lngLat.lng)
+                .addTo(map);
+
+            // Lưu trữ marker và popup hiện tại
+            currentMarker = marker;
+            currentPopup = popup;
+        });
+    </script>
+
+</body>
+</html>
